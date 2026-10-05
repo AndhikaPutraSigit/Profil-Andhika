@@ -41,10 +41,13 @@ const dataKeahlian = [
 // ==========================================
 
 function hitungRataRata(data) {
+
     let total = 0;
 
     for (const keahlian of data) {
+
         total += keahlian.nilai;
+
     }
 
     return total / data.length;
@@ -56,9 +59,13 @@ function hitungRataRata(data) {
 // ==========================================
 
 function cariKategori(data, kategori) {
+
     return data.filter(function(keahlian) {
+
         return keahlian.kategori === kategori;
+
     });
+
 }
 
 
@@ -69,12 +76,19 @@ function cariKategori(data, kategori) {
 function tentukanLevel(nilai) {
 
     if (nilai >= 85) {
+
         return "Sangat Baik";
+
     } else if (nilai >= 75 && nilai < 85) {
+
         return "Baik";
+
     } else {
+
         return "Perlu Latihan";
+
     }
+
 }
 
 
@@ -132,8 +146,6 @@ for (const keahlian of keahlianWeb) {
 
 // ==========================================
 // FILTER KEAHLIAN DENGAN NILAI TINGGI
-// Menggunakan operator perbandingan
-// dan operator logika
 // ==========================================
 
 console.log("");
@@ -155,3 +167,174 @@ for (const keahlian of dataKeahlian) {
     }
 
 }
+
+
+// ==========================================
+// DOM
+// ==========================================
+
+const tabelKeahlian = document.getElementById("tabelKeahlian");
+
+
+// ==========================================
+// MENAMPILKAN DATA KE TABEL
+// ==========================================
+
+function tampilkanData(data) {
+
+    tabelKeahlian.innerHTML = "";
+
+    for (const keahlian of data) {
+
+        const baris = document.createElement("tr");
+
+        const kolomNama = document.createElement("td");
+        kolomNama.textContent = keahlian.nama;
+
+        const kolomKategori = document.createElement("td");
+        kolomKategori.textContent = keahlian.kategori;
+
+        const kolomNilai = document.createElement("td");
+        kolomNilai.textContent = keahlian.nilai;
+
+        const kolomLevel = document.createElement("td");
+        kolomLevel.textContent = tentukanLevel(keahlian.nilai);
+
+        baris.appendChild(kolomNama);
+        baris.appendChild(kolomKategori);
+        baris.appendChild(kolomNilai);
+        baris.appendChild(kolomLevel);
+
+        tabelKeahlian.appendChild(baris);
+
+    }
+
+}
+
+
+// Tampilkan data saat halaman pertama dibuka
+tampilkanData(dataKeahlian);
+
+
+// ==========================================
+// PENCARIAN
+// ==========================================
+
+const formCari = document.getElementById("formCari");
+
+const inputCari = document.getElementById("inputCari");
+
+const hasilPencarian = document.getElementById("hasilPencarian");
+
+
+formCari.addEventListener("submit", function(event) {
+
+    event.preventDefault();
+
+    const kataKunci = inputCari.value.trim().toLowerCase();
+
+
+    if (kataKunci === "") {
+
+        hasilPencarian.textContent =
+            "Silakan masukkan nama keahlian.";
+
+        hasilPencarian.classList.remove("pesan-sukses");
+
+        hasilPencarian.classList.add("pesan-error");
+
+        tampilkanData(dataKeahlian);
+
+        return;
+
+    }
+
+
+    const hasil = dataKeahlian.filter(function(keahlian) {
+
+        return keahlian.nama
+            .toLowerCase()
+            .includes(kataKunci);
+
+    });
+
+
+    tampilkanData(hasil);
+
+
+    if (hasil.length > 0) {
+
+        hasilPencarian.textContent =
+            "Ditemukan " + hasil.length +
+            " data keahlian.";
+
+        hasilPencarian.classList.remove("pesan-error");
+
+        hasilPencarian.classList.add("pesan-sukses");
+
+    } else {
+
+        hasilPencarian.textContent =
+            "Keahlian tidak ditemukan.";
+
+        hasilPencarian.classList.remove("pesan-sukses");
+
+        hasilPencarian.classList.add("pesan-error");
+
+    }
+
+});
+
+
+// ==========================================
+// FILTER KATEGORI
+// ==========================================
+
+const filterKategori =
+    document.getElementById("filterKategori");
+
+
+filterKategori.addEventListener("change", function() {
+
+    const kategoriDipilih = filterKategori.value;
+
+    let hasilFilter;
+
+
+    if (kategoriDipilih === "Semua") {
+
+        hasilFilter = dataKeahlian;
+
+    } else {
+
+        hasilFilter =
+            cariKategori(dataKeahlian, kategoriDipilih);
+
+    }
+
+
+    tampilkanData(hasilFilter);
+
+
+    hasilPencarian.classList.remove("pesan-error");
+
+    hasilPencarian.classList.add("pesan-sukses");
+
+
+    if (kategoriDipilih === "Semua") {
+
+        hasilPencarian.textContent =
+            "Menampilkan semua data keahlian.";
+
+    } else {
+
+        hasilPencarian.textContent =
+            "Menampilkan " +
+            hasilFilter.length +
+            " data kategori " +
+            kategoriDipilih +
+            ".";
+
+    }
+
+});
