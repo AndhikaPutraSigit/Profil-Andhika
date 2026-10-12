@@ -1,117 +1,93 @@
+/* Tampilan dasar website */
 body {
-
     background: #f5f7fa;
-
     font-family: 'Segoe UI', sans-serif;
-
 }
 
-
+/* Header website */
 .header {
-
     background: #0d6efd;
-
     color: white;
-
     text-align: center;
-
     padding: 30px 0;
-
 }
-
 
 .header h1 {
-
     margin-bottom: 5px;
-
 }
 
-
+/* Tampilan kartu */
 .card {
-
     border: none;
-
     border-radius: 15px;
-
 }
 
-
+/* Foto profil */
 .foto-profil {
-
     width: 140px;
-
     height: 140px;
-
     border-radius: 50%;
-
     object-fit: cover;
-
     border: 4px solid #0d6efd;
-
-    box-shadow: 0 4px 12px rgba(0,0,0,.2);
-
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-
-.ipk-box {
-
-    background: #e9f2ff;
-
-    border-left: 5px solid #0d6efd;
-
+/* Form tambah keahlian */
+.form-tambah {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
     border-radius: 10px;
-
-    text-align: center;
-
-    padding: 15px;
-
+    padding: 20px;
 }
 
+.form-tambah h5 {
+    margin-bottom: 15px;
+}
+
+/* Kotak IPK */
+.ipk-box {
+    background: #e9f2ff;
+    border-left: 5px solid #0d6efd;
+    border-radius: 10px;
+    text-align: center;
+    padding: 15px;
+}
 
 .ipk-box h2 {
-
     color: #0d6efd;
-
     margin: 0;
-
 }
 
-
-.footer {
-
-    margin-top: 40px;
-
-    background: #ffffff;
-
-    text-align: center;
-
-    padding: 20px;
-
-    color: #666;
-
-}
-
+/* Pesan sukses */
 .pesan-sukses {
-
     padding: 10px;
-
     background: #e8f5e9;
-
     border-radius: 8px;
-
     color: #198754;
-
 }
 
-
+/* Pesan error */
 .pesan-error {
-
     padding: 10px;
-
     background: #f8d7da;
-
     border-radius: 8px;
-
     color: #842029;
+}
 
+/* Footer */
+.footer {
+    margin-top: 40px;
+    background: #ffffff;
+    text-align: center;
+    padding: 20px;
+    color: #666;
+}
+
+.footer p {
+    margin: 0;
+}
+
+/* Tombol hapus */
+.btn-hapus {
+    white-space: nowrap;
 }
