@@ -1,340 +1,316 @@
-// ==========================================
-// DATA KEAHLIAN MAHASISWA
-// ==========================================
+$(document).ready(function () {
 
-const dataKeahlian = [
-    {
-        nama: "HTML",
-        kategori: "Web",
-        nilai: 85
-    },
-    {
-        nama: "CSS",
-        kategori: "Web",
-        nilai: 80
-    },
-    {
-        nama: "Bootstrap",
-        kategori: "Web",
-        nilai: 82
-    },
-    {
-        nama: "JavaScript",
-        kategori: "Programming",
-        nilai: 75
-    },
-    {
-        nama: "Python",
-        kategori: "Programming",
-        nilai: 78
-    },
-    {
-        nama: "Microsoft Office",
-        kategori: "Office",
-        nilai: 88
-    }
-];
+    // =====================================
+    // 1. DATA KEAHLIAN MAHASISWA
+    // =====================================
+
+    let dataKeahlian = [
+        { id: 1, nama: "HTML", kategori: "Web", nilai: 85 },
+        { id: 2, nama: "CSS", kategori: "Web", nilai: 80 },
+        { id: 3, nama: "Bootstrap", kategori: "Web", nilai: 82 },
+        { id: 4, nama: "JavaScript", kategori: "Programming", nilai: 75 },
+        { id: 5, nama: "Python", kategori: "Programming", nilai: 78 },
+        { id: 6, nama: "Microsoft Office", kategori: "Office", nilai: 88 }
+    ];
+
+    // ID untuk setiap data baru
+    let idBerikutnya = 7;
+
+    // Menyimpan kata pencarian dan kategori aktif
+    let kataKunci = "";
+    let kategoriAktif = "Semua";
 
 
-// ==========================================
-// Menghitung rata-rata nilai keahlian
-// ==========================================
+    // =====================================
+    // 2. MENGHITUNG RATA-RATA NILAI
+    // =====================================
 
-function hitungRataRata(data) {
+    function hitungRataRata(data) {
+        if (data.length === 0) {
+            return 0;
+        }
 
-    let total = 0;
+        let total = 0;
 
-    for (const keahlian of data) {
+        for (const keahlian of data) {
+            total += keahlian.nilai;
+        }
 
-        total += keahlian.nilai;
-
+        return total / data.length;
     }
 
-    return total / data.length;
-}
 
+    // =====================================
+    // 3. MENENTUKAN LEVEL KEAHLIAN
+    // =====================================
 
-// ==========================================
-// Mencari keahlian berdasarkan kategori
-// ==========================================
-
-function cariKategori(data, kategori) {
-
-    return data.filter(function(keahlian) {
-
-        return keahlian.kategori === kategori;
-
-    });
-
-}
-
-
-// ==========================================
-// Menentukan tingkat kemampuan
-// ==========================================
-
-function tentukanLevel(nilai) {
-
-    if (nilai >= 85) {
-
-        return "Sangat Baik";
-
-    } else if (nilai >= 75 && nilai < 85) {
-
-        return "Baik";
-
-    } else {
-
-        return "Perlu Latihan";
-
+    function tentukanLevel(nilai) {
+        if (nilai >= 85) {
+            return "Sangat Baik";
+        } else if (nilai >= 75) {
+            return "Baik";
+        } else {
+            return "Perlu Latihan";
+        }
     }
 
-}
+
+    // =====================================
+    // 4. MENAMPILKAN NOTIFIKASI JQUERY
+    // =====================================
+
+    function tampilkanPesan(pesan, jenis) {
+        const warna = jenis === "sukses"
+            ? "pesan-sukses"
+            : "pesan-error";
+
+        $("#pesanForm")
+            .stop(true, true)
+            .hide()
+            .removeClass("pesan-sukses pesan-error")
+            .addClass(warna)
+            .text(pesan)
+            .fadeIn(300);
+
+        // Pesan hilang setelah 3 detik
+        $("#pesanForm").delay(3000).fadeOut(500);
+    }
 
 
-// ==========================================
-// MENAMPILKAN SEMUA DATA
-// ==========================================
+    // =====================================
+    // 5. MENAMPILKAN DATA KE TABEL
+    // =====================================
 
-console.log("=== DATA KEAHLIAN MAHASISWA ===");
+    function tampilkanData() {
 
-dataKeahlian.forEach(function(keahlian) {
+        const tabel = $("#tabelKeahlian");
+        tabel.empty();
 
-    console.log(
-        keahlian.nama +
-        " | Kategori: " +
-        keahlian.kategori +
-        " | Nilai: " +
-        keahlian.nilai +
-        " | Level: " +
-        tentukanLevel(keahlian.nilai)
-    );
+        // Memfilter data berdasarkan pencarian dan kategori
+        const hasilFilter = dataKeahlian.filter(function (item) {
 
-});
+            const cocokNama = item.nama
+                .toLowerCase()
+                .includes(kataKunci);
 
+            const cocokKategori =
+                kategoriAktif === "Semua" ||
+                item.kategori === kategoriAktif;
 
-// ==========================================
-// MENGHITUNG RATA-RATA
-// ==========================================
+            return cocokNama && cocokKategori;
+        });
 
-const rataRata = hitungRataRata(dataKeahlian);
+        // Membuat baris tabel menggunakan DOM
+        for (const item of hasilFilter) {
 
-console.log("");
-console.log("=== HASIL PERHITUNGAN ===");
-console.log("Rata-rata nilai keahlian: " + rataRata.toFixed(2));
+            const baris = $("<tr>");
 
+            $("<td>").text(item.nama).appendTo(baris);
+            $("<td>").text(item.kategori).appendTo(baris);
+            $("<td>").text(item.nilai).appendTo(baris);
+            $("<td>").text(tentukanLevel(item.nilai)).appendTo(baris);
 
-// ==========================================
-// MENCARI KEAHLIAN KATEGORI WEB
-// ==========================================
+            // Membuat tombol hapus
+            const tombolHapus = $("<button>")
+                .attr("type", "button")
+                .addClass("btn btn-danger btn-sm btn-hapus")
+                .attr("data-id", item.id)
+                .text("Hapus");
 
-const keahlianWeb = cariKategori(dataKeahlian, "Web");
+            $("<td>")
+                .append(tombolHapus)
+                .appendTo(baris);
 
-console.log("");
-console.log("=== KEAHLIAN KATEGORI WEB ===");
+            tabel.append(baris);
+        }
 
-for (const keahlian of keahlianWeb) {
+        // Menampilkan pesan jika data tidak ditemukan
+        if (hasilFilter.length === 0) {
+            const barisKosong = $("<tr>");
+            $("<td>")
+                .attr("colspan", 5)
+                .addClass("text-center")
+                .text("Data keahlian tidak ditemukan.")
+                .appendTo(barisKosong);
 
-    console.log(
-        keahlian.nama +
-        " - Nilai: " +
-        keahlian.nilai
-    );
+            tabel.append(barisKosong);
+        }
 
-}
-
-
-// ==========================================
-// FILTER KEAHLIAN DENGAN NILAI TINGGI
-// ==========================================
-
-console.log("");
-console.log("=== KEAHLIAN DENGAN NILAI >= 80 ===");
-
-for (const keahlian of dataKeahlian) {
-
-    if (
-        keahlian.nilai >= 80 &&
-        keahlian.kategori !== "Office"
-    ) {
-
-        console.log(
-            keahlian.nama +
-            " - Nilai: " +
-            keahlian.nilai
+        // Menampilkan jumlah hasil dan rata-rata seluruh data
+        $("#jumlahData").text(
+            "Menampilkan " + hasilFilter.length +
+            " dari " + dataKeahlian.length +
+            " data keahlian. Rata-rata seluruh nilai: " +
+            hitungRataRata(dataKeahlian).toFixed(2)
         );
-
-    }
-
-}
-
-
-// ==========================================
-// DOM
-// ==========================================
-
-const tabelKeahlian = document.getElementById("tabelKeahlian");
-
-
-// ==========================================
-// MENAMPILKAN DATA KE TABEL
-// ==========================================
-
-function tampilkanData(data) {
-
-    tabelKeahlian.innerHTML = "";
-
-    for (const keahlian of data) {
-
-        const baris = document.createElement("tr");
-
-        const kolomNama = document.createElement("td");
-        kolomNama.textContent = keahlian.nama;
-
-        const kolomKategori = document.createElement("td");
-        kolomKategori.textContent = keahlian.kategori;
-
-        const kolomNilai = document.createElement("td");
-        kolomNilai.textContent = keahlian.nilai;
-
-        const kolomLevel = document.createElement("td");
-        kolomLevel.textContent = tentukanLevel(keahlian.nilai);
-
-        baris.appendChild(kolomNama);
-        baris.appendChild(kolomKategori);
-        baris.appendChild(kolomNilai);
-        baris.appendChild(kolomLevel);
-
-        tabelKeahlian.appendChild(baris);
-
-    }
-
-}
-
-
-// Tampilkan data saat halaman pertama dibuka
-tampilkanData(dataKeahlian);
-
-
-// ==========================================
-// PENCARIAN
-// ==========================================
-
-const formCari = document.getElementById("formCari");
-
-const inputCari = document.getElementById("inputCari");
-
-const hasilPencarian = document.getElementById("hasilPencarian");
-
-
-formCari.addEventListener("submit", function(event) {
-
-    event.preventDefault();
-
-    const kataKunci = inputCari.value.trim().toLowerCase();
-
-
-    if (kataKunci === "") {
-
-        hasilPencarian.textContent =
-            "Silakan masukkan nama keahlian.";
-
-        hasilPencarian.classList.remove("pesan-sukses");
-
-        hasilPencarian.classList.add("pesan-error");
-
-        tampilkanData(dataKeahlian);
-
-        return;
-
     }
 
 
-    const hasil = dataKeahlian.filter(function(keahlian) {
+    // =====================================
+    // 6. EVENT PENCARIAN
+    // =====================================
 
-        return keahlian.nama
-            .toLowerCase()
-            .includes(kataKunci);
+    $("#formCari").on("submit", function (event) {
 
+        event.preventDefault();
+
+        kataKunci = $("#inputCari").val().trim().toLowerCase();
+
+        tampilkanData();
+
+        if (kataKunci === "") {
+            tampilkanPesan(
+                "Menampilkan semua data sesuai filter kategori.",
+                "sukses"
+            );
+        } else {
+            tampilkanPesan(
+                "Pencarian selesai.",
+                "sukses"
+            );
+        }
     });
 
 
-    tampilkanData(hasil);
+    // =====================================
+    // 7. EVENT FILTER KATEGORI
+    // =====================================
+
+    $("#filterKategori").on("change", function () {
+
+        kategoriAktif = $(this).val();
+
+        tampilkanData();
+
+        tampilkanPesan(
+            "Filter kategori berhasil diterapkan.",
+            "sukses"
+        );
+    });
 
 
-    if (hasil.length > 0) {
+    // =====================================
+    // 8. EVENT TAMBAH DATA DAN VALIDASI
+    // =====================================
 
-        hasilPencarian.textContent =
-            "Ditemukan " + hasil.length +
-            " data keahlian.";
+    $("#formTambah").on("submit", function (event) {
 
-        hasilPencarian.classList.remove("pesan-error");
+        event.preventDefault();
 
-        hasilPencarian.classList.add("pesan-sukses");
+        const nama = $("#namaKeahlian").val().trim();
+        const kategori = $("#kategoriBaru").val();
+        const nilaiInput = $("#nilaiBaru").val();
 
-    } else {
+        // Memeriksa input kosong
+        if (nama === "" || nilaiInput === "") {
+            tampilkanPesan(
+                "Nama keahlian dan nilai wajib diisi.",
+                "error"
+            );
+            return;
+        }
 
-        hasilPencarian.textContent =
-            "Keahlian tidak ditemukan.";
+        const nilai = Number(nilaiInput);
 
-        hasilPencarian.classList.remove("pesan-sukses");
+        // Memeriksa nilai harus bilangan bulat 0-100
+        if (
+            !Number.isInteger(nilai) ||
+            nilai < 0 ||
+            nilai > 100
+        ) {
+            tampilkanPesan(
+                "Nilai harus berupa bilangan bulat 0 sampai 100.",
+                "error"
+            );
+            return;
+        }
 
-        hasilPencarian.classList.add("pesan-error");
+        // Memeriksa agar nama tidak duplikat
+        const namaSudahAda = dataKeahlian.some(function (item) {
+            return item.nama.toLowerCase() === nama.toLowerCase();
+        });
 
+        if (namaSudahAda) {
+            tampilkanPesan(
+                "Keahlian tersebut sudah ada.",
+                "error"
+            );
+            return;
+        }
+
+        // Menambahkan data baru ke array
+        dataKeahlian.push({
+            id: idBerikutnya,
+            nama: nama,
+            kategori: kategori,
+            nilai: nilai
+        });
+
+        idBerikutnya++;
+
+        // Mengosongkan pencarian dan menampilkan data baru
+        kataKunci = "";
+        kategoriAktif = "Semua";
+
+        $("#inputCari").val("");
+        $("#filterKategori").val("Semua");
+
+        tampilkanData();
+
+        this.reset();
+
+        tampilkanPesan(
+            "Keahlian berhasil ditambahkan.",
+            "sukses"
+        );
+    });
+
+
+    // =====================================
+    // 9. EVENT HAPUS DATA
+    // =====================================
+
+    $("#tabelKeahlian").on("click", ".btn-hapus", function () {
+
+        // Mengambil ID dari tombol yang diklik
+        const id = Number($(this).attr("data-id"));
+
+        // Menghapus data berdasarkan ID
+        dataKeahlian = dataKeahlian.filter(function (item) {
+            return item.id !== id;
+        });
+
+        // Memperbarui tabel
+        tampilkanData();
+
+        tampilkanPesan(
+            "Keahlian berhasil dihapus.",
+            "sukses"
+        );
+    });
+
+
+    // =====================================
+    // 10. HASIL PERHITUNGAN DI CONSOLE
+    // =====================================
+
+    console.log("=== DATA KEAHLIAN MAHASISWA ===");
+    console.log(dataKeahlian);
+
+    console.log(
+        "Rata-rata nilai:",
+        hitungRataRata(dataKeahlian).toFixed(2)
+    );
+
+    console.log("=== KEAHLIAN KATEGORI WEB ===");
+
+    for (const item of dataKeahlian) {
+        if (item.kategori === "Web") {
+            console.log(item.nama + " - Nilai: " + item.nilai);
+        }
     }
 
-});
-
-
-// ==========================================
-// FILTER KATEGORI
-// ==========================================
-
-const filterKategori =
-    document.getElementById("filterKategori");
-
-
-filterKategori.addEventListener("change", function() {
-
-    const kategoriDipilih = filterKategori.value;
-
-    let hasilFilter;
-
-
-    if (kategoriDipilih === "Semua") {
-
-        hasilFilter = dataKeahlian;
-
-    } else {
-
-        hasilFilter =
-            cariKategori(dataKeahlian, kategoriDipilih);
-
-    }
-
-
-    tampilkanData(hasilFilter);
-
-
-    hasilPencarian.classList.remove("pesan-error");
-
-    hasilPencarian.classList.add("pesan-sukses");
-
-
-    if (kategoriDipilih === "Semua") {
-
-        hasilPencarian.textContent =
-            "Menampilkan semua data keahlian.";
-
-    } else {
-
-        hasilPencarian.textContent =
-            "Menampilkan " +
-            hasilFilter.length +
-            " data kategori " +
-            kategoriDipilih +
-            ".";
-
-    }
+    // Menampilkan data pertama kali
+    tampilkanData();
 
 });
